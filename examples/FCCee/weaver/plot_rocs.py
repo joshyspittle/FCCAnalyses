@@ -11,7 +11,7 @@ import shutil
 import matplotlib.pyplot as plt
 
 # use LaTeX rendering only if latex is on PATH else fall back
-USETEX = shutil.which("latex") is not None
+USETEX = False #shutil.which("latex") is not None
 if not USETEX:
     print("[plot_rocs] latex not found on PATH: using default styling "
           "(add texlive to PATH for nicer LaTeX-rendered labels)")
@@ -51,14 +51,18 @@ ROOT.ROOT.EnableImplicitMT()
 ## inference-output dirs, laid out as <dir>/wzp6_ee_nunuH_H{f}{f}_ecm240/*.root
 DIR_70M = "/eos/experiment/fcc/ee/jet_flavour_tagging/pre_summer2026/roc_inference_70M/"
 DIR_W23 = "/eos/experiment/fcc/ee/jet_flavour_tagging/winter2023/wc_pt_7classes_12_04_2023/"
+DIR_TUT = "/gluster/home/jspittle/ML_model/tutorial_output/"
 
 def main():
     args = argparse.ArgumentParser().parse_args()
 
+    os.makedirs("plots", exist_ok=True)
+
     ## two 7-class models to compare, same sample layout
     proc_70M = Process("wzp6_70M", "wzp6_ee_nunuH", "pre_summer2026 (70M)", DIR_70M)
     proc_w23 = Process("wzp6_w23", "wzp6_ee_nunuH", "winter2023 (7-class)", DIR_W23)
-    variants = [proc_70M, proc_w23]
+    proc_tut = Process("tutorial", "H*", "pre_summer2026 (70M)", DIR_TUT)
+    variants = [proc_tut] #[proc_70M, proc_w23]
 
     ## load the per-flavour score trees for both variants
     samples = dict()
@@ -67,8 +71,11 @@ def main():
     for proc in variants:
         samples[proc] = dict()
         for f in flavors:
-            dirpath = "{}/{}_H{}{}_ecm240/".format(proc.dir, proc.name, f, f)
-            files = sorted(glob.glob("{}/*.root".format(dirpath)))[:nfiles_max]
+            if proc.name == "H*":
+                files = sorted(glob.glob("{}/H{}{}.root".format(proc.dir, f, f)))[:nfiles_max]
+            else:                  
+                dirpath = "{}/{}_H{}{}_ecm240/".format(proc.dir, proc.name, f, f)
+                files = sorted(glob.glob("{}/*.root".format(dirpath)))[:nfiles_max]
             samples[proc][f] = Sample(files, "events", f, proc)
 
     roc_param = RocParam(2, 40000)  # nbins = discriminant-histogram bins (ROC threshold resolution)
@@ -287,13 +294,34 @@ def dfh(df, fs, bkg_flavors, nbins, label):
     ## single fine histogram of the binary discriminant D = score_s / (score_s + Σ score_bkg);
     ## the ROC is recovered from its reverse-cumulative sum (see ROC.get_roc)
     fb = "".join(bkg_flavors)
-    score_s = "recojet_is{}".format(fs.upper())
-    score_b = "(" + "+".join("recojet_is{}".format(f.upper()) for f in bkg_flavors) + ")"
+    
+    # Check if the tutorial's combined Q branch exists in this dataframe
+    has_isQ = "recojet_isQ" in [str(c) for c in df.GetColumnNames()]
+
+    # 1. Map signal flavor (if signal is u or d, it maps to Q)
+    fs_upper = fs.upper()
+    if has_isQ and fs_upper in ["U", "D"]:
+        score_s = "recojet_isQ"
+    else:
+        score_s = "recojet_is{}".format(fs_upper)
+
+    # 2. Map background flavors (replace U and D with Q, avoiding duplicates)
+    bkg_list = []
+    for f in bkg_flavors:
+        f_upper = f.upper()
+        if has_isQ and f_upper in ["U", "D"]:
+            if "recojet_isQ" not in bkg_list:
+                bkg_list.append("recojet_isQ")
+        else:
+            bkg_list.append("recojet_is{}".format(f_upper))
+
+    score_b = "(" + "+".join(bkg_list) + ")"
     dvar = "d_{}{}".format(fs, fb)
 
     print("producing roc curve: {} vs {} -- {}".format(fs, fb, label))
     df = df.Define(dvar, "binary_discriminant({}, {})".format(score_s, score_b))
     return df.Histo1D(("h_{}".format(label), ";D({},{});jets".format(fs, fb), nbins, 0.0, 1.0), dvar)
+
 
 
 # _______________________________________________________________________________________

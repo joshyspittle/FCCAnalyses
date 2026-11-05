@@ -5,11 +5,11 @@ testFile = "https://fccsw.web.cern.ch/fccsw/testsamples/wzp6_ee_nunuH_Hss_ecm240
 outputDir   = "outputs/inference"
 
 ## pre_summer2026 7-class (G/U/D/S/C/B/TAU) particle transformer, 70M jets
-model_dir = "/eos/experiment/fcc/ee/jet_flavour_tagging/pre_summer2026/models/IDEA_240_andrea_30_06_2026/TRAINING_70M_7labels_4GPUs_newKey4Hep_LongJob2"
-model_name = "TRAINING_70M_7labels_4GPUs_newKey4Hep_LongJob2"
+model_dir = "/gluster/home/jspittle/ML_model"
+model_name = "fccee_flavtagging_edm4hep_wc_v1"
 
-weaver_preproc = "{}/{}_preprocess.json".format(model_dir, model_name)
-weaver_model = "{}/{}_best_epoch_state.onnx".format(model_dir, model_name)
+weaver_preproc = "{}/{}.json".format(model_dir, model_name)
+weaver_model = "{}/{}.onnx".format(model_dir, model_name)
 
 from addons.ONNXRuntime.jetFlavourHelper import JetFlavourHelper
 from addons.FastJet.jetClusteringHelper import ExclusiveJetClusteringHelper
@@ -46,6 +46,9 @@ class RDFanalysis:
 
         ## define observables for tagger
         df = jetFlavourHelper.define(df)
+
+        df = df.Define("event_id", "rdfentry_")
+        df = df.Filter("event_id % 5 == 0")
 
         ## tagger inference
         df = jetFlavourHelper.inference(weaver_preproc, weaver_model, df)

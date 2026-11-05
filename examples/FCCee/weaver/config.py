@@ -25,7 +25,7 @@ collections = {
 
 #### list of flavors (7 classes, matching the G/U/D/S/C/B/TAU tagger outputs);
 #### the jet label is inferred from the input file name ("Hff" or "_ee_ff_")
-flavors = ["g", "u", "d", "s", "c", "b", "tau"]
+flavors = ["s", "c", "b", "d", "u", "g"]
 
 ## define here the branches to be stored in the output root files in addition to the predefined one
 ## only the name of the var is used here, the metadata is used in stage_plots
@@ -326,6 +326,30 @@ variables_pfcand = {
         "xmin": 0,
         "xmax": 100,
         "scale": "log",
+    },
+    "pfcand_px": {
+        "name": "pfcand_px",
+        "title": "p [GeV]",
+        "bin": 100,
+        "xmin": -200,
+        "xmax": 200,
+        "scale": "lin",
+    },
+    "pfcand_py": {
+        "name": "pfcand_py",
+        "title": "p [GeV]",
+        "bin": 100,
+        "xmin": -200,
+        "xmax": 200,
+        "scale": "lin",
+    },
+    "pfcand_pz": {
+        "name": "pfcand_pz",
+        "title": "p [GeV]",
+        "bin": 100,
+        "xmin": -200,
+        "xmax": 200,
+        "scale": "lin",
     },
     "pfcand_theta": {
         "name": "pfcand_theta",

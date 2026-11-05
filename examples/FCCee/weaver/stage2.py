@@ -53,6 +53,12 @@ pf_perjet = {b: ak.flatten(arr_pf[b], axis=1) for b in branches_pfcand}
 npf = ak.to_numpy(ak.num(pf_perjet[branches_pfcand[0]], axis=1))
 njets_tot = int(npf.size)
 
+## event index per jet, aligned with jet_flat (global entry number in the input file)  
+njets_per_event = ak.to_numpy(ak.num(arr_jet[branches_jet[0]], axis=1))                  
+event_idx = np.repeat(np.arange(n_start, n_start + len(njets_per_event), dtype=np.int64),
+                      njets_per_event)                                                   
+assert len(event_idx) == njets_tot  
+
 maxn = 500
 out_root = TFile(output_file, "RECREATE")
 tr = TTree("tree", "tree with jets")
@@ -69,6 +75,9 @@ for b in branches_jet:
 jet_npfcand = array("i", [0])
 tr.Branch("jet_npfcand", jet_npfcand, "jet_npfcand/I")
 
+event_id = array("q", [0])                               
+tr.Branch("event_id", event_id, "event_id/L")       
+
 pf_buf, pf_np = {}, {}
 for b in branches_pfcand:
     pf_buf[b] = array("f", maxn * [0.0])
@@ -83,6 +92,7 @@ pf_flat = {b: ak.to_numpy(ak.flatten(pf_perjet[b], axis=1)).astype(np.float32) f
 for j in range(njets_tot):
     for b in branches_jet:
         jet_array[b][0] = jet_flat[b][j]
+    event_id[0] = int(event_idx[j]) 
     n = int(min(npf[j], maxn))
     jet_npfcand[0] = n
     o = pf_offsets[j]
