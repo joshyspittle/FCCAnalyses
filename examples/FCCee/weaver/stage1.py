@@ -37,9 +37,6 @@ class RDFanalysis:
         df = df.Define("jet_p4", "JetConstituentsUtils::compute_tlv_jets({})".format(jetClusteringHelper.jets))
         df = df.Define("event_invariant_mass", "JetConstituentsUtils::InvariantMass(jet_p4[0], jet_p4[1])")
 
-        df = df.Define("n_jets", "int(jet_p4.size())")
-        df = df.Define("event_id", "rdfentry_")
-
         return df
 
     # __________________________________________________________
@@ -49,6 +46,6 @@ class RDFanalysis:
         branches_jet = list(variables_jet.keys())
         branches_event = list(variables_event.keys())
 
-        branchList = branches_event + branches_jet + branches_pfcand + ["n_jets", "event_id"]
+        branchList = branches_event + branches_jet + branches_pfcand
 
         return branchList
