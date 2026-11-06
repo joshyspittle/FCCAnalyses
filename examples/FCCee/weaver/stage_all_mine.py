@@ -36,7 +36,7 @@ def main():
     opt = args.opt
 
     ## 7 classes: H{f}{f} tokens
-    flavors = ["ss"]#, "cc", "bb", "dd", "uu", "gg"]
+    flavors = ["ss", "cc", "bb", "dd", "uu", "gg"]
 
     outtmpdir = "/tmp/data/stage_all"
     os.system("rm -rf {}".format(outtmpdir))
