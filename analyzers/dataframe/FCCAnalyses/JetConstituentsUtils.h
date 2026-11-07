@@ -255,6 +255,8 @@ namespace FCCAnalyses {
     rv::RVec<FCCAnalysesJetConstituentsData> get_isChargedHad(const rv::RVec<FCCAnalysesJetConstituents>& jcs);
     rv::RVec<FCCAnalysesJetConstituentsData> get_isGamma(const rv::RVec<FCCAnalysesJetConstituents>& jcs);
     rv::RVec<FCCAnalysesJetConstituentsData> get_isNeutralHad(const rv::RVec<FCCAnalysesJetConstituents>& jcs);
+    rv::RVec<FCCAnalysesJetConstituentsData> get_jet_index(const rv::RVec<FCCAnalysesJetConstituents>& jcs);
+    rv::RVec<FCCAnalysesJetConstituentsData> merge_jets(const rv::RVec<FCCAnalysesJetConstituentsData>& per_jet);
 
     //countings
     int count_jets(rv::RVec<FCCAnalysesJetConstituents> jets);

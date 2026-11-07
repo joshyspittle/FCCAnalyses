@@ -220,6 +220,10 @@ class JetFlavourHelper:
         self.definition[
             "jet_nnhad{}".format(self.tag)
         ] = "JetConstituentsUtils::count_type(pfcand_isNeutralHad{})".format(self.tag)
+        
+        self.definition[
+            "pfcand_jet_index{}".format(self.tag)
+            ] = "JetConstituentsUtils::get_jet_index({})".format(self.const)
 
     def define(self, df):
 
@@ -261,7 +265,8 @@ class JetFlavourHelper:
 
         self.get_weight_str = "JetFlavourUtils::get_weights(rdfslot_, "
         for var in self.variables:
-            self.get_weight_str += "{},".format(var)
+            #self.get_weight_str += "{},".format(var)
+            self.get_weight_str += "JetConstituentsUtils::merge_jets({}),".format(var)
         self.get_weight_str = "{})".format(self.get_weight_str[:-1])
 
         from ROOT import JetFlavourUtils

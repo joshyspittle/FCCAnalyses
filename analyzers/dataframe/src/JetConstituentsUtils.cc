@@ -1181,6 +1181,36 @@ namespace FCCAnalyses
       return out;
     }
 
+    rv::RVec<FCCAnalysesJetConstituentsData> get_jet_index(const rv::RVec<FCCAnalysesJetConstituents> &jcs)
+    {
+        rv::RVec<FCCAnalysesJetConstituentsData> out;
+        for (std::size_t i = 0; i < jcs.size(); ++i) {
+            FCCAnalysesJetConstituentsData jet_index;
+            FCCAnalysesJetConstituents ct = jcs.at(i);
+            for (std::size_t j = 0; j < ct.size(); ++j) {
+                jet_index.push_back(i);
+            }
+            out.push_back(jet_index);
+        }
+        return out;
+    }
+
+    rv::RVec<FCCAnalysesJetConstituentsData> merge_jets(const rv::RVec<FCCAnalysesJetConstituentsData> &per_jet)
+    {
+    rv::RVec<FCCAnalysesJetConstituentsData> out;
+    if (per_jet.empty()) {
+        return out;
+    }
+    FCCAnalysesJetConstituentsData merged;
+    for (const auto& jet : per_jet) {
+        for (const auto& x : jet) {
+        merged.push_back(x);
+        }
+    }
+    out.push_back(merged);
+    return out;
+    }
+
     // countings
     int count_jets(rv::RVec<FCCAnalysesJetConstituents> jets)
     {
