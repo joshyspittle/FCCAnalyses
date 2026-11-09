@@ -18,8 +18,7 @@ from array import array
 from ROOT import TFile, TTree
 from examples.FCCee.weaver.config import variables_pfcand, variables_jet, flavors
 
-input_file = "/gluster/home/jspittle/ML_model/ML_Prepared/train/stage2_Hss.root"
-output_file = "/gluster/home/jspittle/ML_model/ML_Prepared/train_all_const/stage3_Hss.root"
+input_file, output_file = sys.argv[1], sys.argv[2]
 
 branches_pfcand = list(variables_pfcand.keys())
 branches_jet = list(variables_jet.keys())

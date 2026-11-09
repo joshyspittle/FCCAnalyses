@@ -14,22 +14,34 @@ def main():
     parser.add_argument(
         "--indir",
         help="path input directory",
-        default="/eos/experiment/fcc/ee/generation/DelphesEvents/winter2023_training/IDEA/",
+        default="/scratch/condor_pool/condor/dir_1085990/FCCsamples",
     )
     parser.add_argument(
-        "--outdir",
-        help="path output directory",
-        default="/eos/experiment/fcc/ee/jet_flavour_tagging/winter2023/samples_gen_v1",
+        "--stage2dir",
+        help="output directory for stage2 files",
+        default="/gluster/home/jspittle/ML_model/ML_Prepared/",
     )
+
+    parser.add_argument(
+        "--stage3indir", 
+        help="directory storing stage2 files",
+        default=None)
+
+    parser.add_argument(
+        "--stage3outdir", 
+        help="output directory for stage3 files",
+        default=None)
 
     parser.add_argument("--sample", help="sample name (XX replaced by each flavour token)", default="wzp6_ee_nunuH_HXX_ecm240")
     parser.add_argument("--ncpus", help="number of cpus", type=int, default=64)
     parser.add_argument("--nev", help="events per flavour to process in stage1 (0 = all)", type=int, default=0)
-    parser.add_argument("--opt", help="option 1: run stage 1, 2: run stage 2, 3: all 4: clean", default="3")
+    parser.add_argument("--opt", help="option 1: run stage 1, 2: run stage 2, 3: run stage 3, 4: run stage 1 and 2, 5: all", default="5")
 
     args = parser.parse_args()
     indir = args.indir
-    outdir = args.outdir
+    stage2dir = args.stage2dir
+    stage3indir = args.stage3indir if args.stage3indir else stage2dir
+    stage3outdir = args.stage3outdir if args.stage3outdir else stage2dir
     ncpus = args.ncpus
     sample = args.sample
     nev = args.nev
@@ -41,7 +53,8 @@ def main():
     outtmpdir = "/tmp/data/stage_all"
     os.system("rm -rf {}".format(outtmpdir))
     os.system("mkdir -p {}".format(outtmpdir))
-    os.system("mkdir -p {}".format(outdir))
+    os.system("mkdir -p {}".format(stage2dir))
+    os.system("mkdir -p {}".format(stage3outdir))
 
     ## fill name of stage1 files
     stage1_files = dict()
@@ -52,7 +65,7 @@ def main():
 
     for f in flavors:
         ### run stage 1
-        if opt == "1" or opt == "3":
+        if opt == "1" or opt == "4" or opt == "5":
 
             sample_f = sample.replace("XX", f)
             edm_files = "{}/{}/*.root".format(indir, sample_f)
@@ -69,7 +82,7 @@ def main():
             os.system(cmd_stage1)
 
         ### run stage 2
-        if opt == "2" or opt == "3":
+        if opt == "2" or opt == "4" or opt == "5":
 
             nevents = count_events(stage1_files[f])
             nevents_per_thread = int(nevents / ncpus)
@@ -110,11 +123,20 @@ def main():
             os.system(hadd_cmd)
             print("")
             print("copy file to final destination...")
-            os.system("cp {} {}".format(stage2_final_file, outdir))
-            print("file {} copied".format(outdir))
-            print("cleaning up tmp files...".format(outdir))
+            os.system("cp {} {}".format(stage2_final_file, stage2dir))
+            print("file {} copied".format(stage2dir))
+            print("cleaning up tmp files...".format(stage2dir))
             os.system("rm -rf {} {} {}".format(stage2_final_file, stage1_files[f], stage2_wild_files))
             print("done.")
+
+        if opt == "3" or opt == "5":
+
+            cmd_stage3 = "python /gluster/home/jspittle/FCCAnalyses/examples/FCCee/weaver/stage3.py {}/stage2_H{}.root {}/stage3_H{}.root".format(
+                stage3_indir, f, stage3_outdir, f
+            )
+
+            print("running stage 3 for: stage2_H{}".format(f))
+            os.system(cmd_stage3)
 
 
 # ________________________________________________________________________________
