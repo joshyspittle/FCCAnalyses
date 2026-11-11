@@ -49,6 +49,7 @@ class JetFlavourHelper:
 
         # kinematics, displacement, PID
         self.definition["pfcand_e{}".format(self.tag)] = "JetConstituentsUtils::get_e({})".format(self.const)
+        self.definition["pfcand_e_log{}".format(self.tag)] = "JetConstituentsUtils::get_e_log({})".format(self.const)
         self.definition["pfcand_p{}".format(self.tag)] = "JetConstituentsUtils::get_p({})".format(self.const)
         self.definition["pfcand_px{}".format(self.tag)] = "JetConstituentsUtils::get_px({})".format(self.const)
         self.definition["pfcand_py{}".format(self.tag)] = "JetConstituentsUtils::get_py({})".format(self.const)

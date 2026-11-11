@@ -151,6 +151,22 @@ namespace FCCAnalyses
       return cast_constituent(jcs, ReconstructedParticle::get_e);
     }
 
+    rv::RVec<FCCAnalysesJetConstituentsData> get_e_log(const rv::RVec<FCCAnalysesJetConstituents> &jcs)
+    {
+      rv::RVec<FCCAnalysesJetConstituentsData> out;
+      for (size_t i = 0; i < jcs.size(); ++i)
+      {
+        auto &jet_csts = out.emplace_back();
+        auto csts = get_jet_constituents(jcs, i);
+        for (const auto &jc : csts)
+        {
+          float e_log = float(std::log10(jc.energy));
+          jet_csts.emplace_back(e_log);
+        }
+      }
+      return out;
+    }
+
     rv::RVec<FCCAnalysesJetConstituentsData> get_theta(const rv::RVec<FCCAnalysesJetConstituents> &jcs)
     {
       return cast_constituent(jcs, ReconstructedParticle::get_theta);

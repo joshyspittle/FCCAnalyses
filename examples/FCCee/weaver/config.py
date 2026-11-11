@@ -38,6 +38,14 @@ variables_pfcand = {
         "xmax": 0,
         "scale": "log",
     },
+    "pfcand_e_log": {
+        "name": "pfcand_e_log",
+        "title": "log(E_{i})",
+        "bin": 100,
+        "xmin": -3,
+        "xmax": 3,
+        "scale": "log",
+    },
     "pfcand_thetarel": {
         "name": "pfcand_thetarel",
         "title": "#theta_{rel}",
@@ -46,12 +54,28 @@ variables_pfcand = {
         "xmax": 3.0,
         "scale": "lin",
     },
+    "pfcand_theta": {
+        "name": "pfcand_theta",
+        "title": "#theta",
+        "bin": 100,
+        "xmin": 0.0,
+        "xmax": 3.15,
+        "scale": "lin",
+    },
     "pfcand_phirel": {
         "name": "pfcand_phirel",
         "title": "#phi_{rel}",
         "bin": 100,
         "xmin": -3.14,
         "xmax": 3.14,
+        "scale": "lin",
+    },
+    "pfcand_phi": {
+        "name": "pfcand_phi",
+        "title": "#phi",
+        "bin": 100,
+        "xmin": -3.15,
+        "xmax": 3.15,
         "scale": "lin",
     },
     "pfcand_dptdpt": {

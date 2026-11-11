@@ -132,7 +132,7 @@ def main():
         if opt == "3" or opt == "5":
 
             cmd_stage3 = "python /gluster/home/jspittle/FCCAnalyses/examples/FCCee/weaver/stage3.py {}/stage2_H{}.root {}/stage3_H{}.root".format(
-                stage3_indir, f, stage3_outdir, f
+                stage3indir, f, stage3outdir, f
             )
 
             print("running stage 3 for: stage2_H{}".format(f))
